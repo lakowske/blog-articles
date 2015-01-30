@@ -6,7 +6,7 @@ var fs             = require('fs');
 var path           = require('path');
 var walk           = require('walk')
 var trumpet        = require('trumpet');
-var linkStand      = require('./linkstand.js');
+var linkstand      = require('./linkstand');
 
 
 /*
