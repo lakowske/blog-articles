@@ -1,0 +1,34 @@
+{
+  "name": "blog-articles",
+  "version": "0.0.1",
+  "description": "Serves articles from a nodejs http server",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lakowske/blog-articles.git"
+  },
+  "keywords": [
+    "blog",
+    "articles",
+    "trumpet",
+    "stream",
+    "server"
+  ],
+  "author": "Seth Lakowske <lakowske@gmail.com> (http://sethlakowske.com/)",
+  "license": "BSD-3",
+  "bugs": {
+    "url": "https://github.com/lakowske/blog-articles/issues"
+  },
+  "homepage": "https://github.com/lakowske/blog-articles",
+  "dependencies": {
+    "hyperspace": "^2.1.4",
+    "routes": "^2.0.0",
+    "walk": "^2.3.9"
+  },
+  "devDependencies": {
+    "tape": "^3.4.0"
+  }
+}
