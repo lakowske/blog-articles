@@ -2,70 +2,91 @@
  * (C) 2015 Seth Lakowske
  */
 
-var path      = require('path');
-var walk      = require('walk')
-var hyperspace = require('hyperspace');
+var fs             = require('fs');
+var path           = require('path');
+var walk           = require('walk')
+var trumpet        = require('trumpet');
+var linkStand      = require('./linkstand.js');
 
-var discovered = []
 
-function read (file) {
-    return fs.createReadStream(path.join(__dirname, 'articles', file));
+/*
+ * Creates a stream of an article, if the article exists.
+ */
+function read (file, cb, error) {
+    fs.stat(file, function(err, stat) {
+        if (err == null) {
+            cb(fs.createReadStream(path.join(__dirname, file)));
+        } else if (err.code == 'ENOENT') {
+            console.log(file + ' article does not exist');
+            error(err);
+        } else {
+            console.log('error: ', err.code);
+            error(err);
+        }
+    })
 }
 
-function layout(res, params) {
+/*
+ * Reads the layout of the article and pass the related links stream to cb.
+ * Users can write related link objects to the stream
+ */
+function layout(res, params, mount, articleDir, cb) {
     res.setHeader('content-type', 'text/html');
-    var tr = trumpet();
-    read('/' + params.article + '/index.html').pipe(tr).pipe(res);
-    return tr.createWriteStream('#related');
+
+    read(path.join(articleDir, params.article, 'index.html'), function(articleStream) {
+        var tr = trumpet();
+        articleStream.pipe(tr).pipe(res);
+        cb(tr.createWriteStream('#related'));
+    }, function(error) {
+        res.statusCode = 404;
+        res.write('invalid article requested');
+        res.end();
+    });
+
 }
 
-function articles(onFile, onEnd) {
-   var walker = walk.walk('./articles');
+/*
+ * Attaches an article renderer to a route at the given mount point
+ *
+ * @param {String} mount point where articles are served.  Should not end in a slash.
+ * @param {String} articleDir points to where articles reside on the filesystem.
+ * @param {Object} router is an instance from the routes module.
+ */
+function attach(mount, articleDir, router, cb) {
+
+    var discovered = []
+
+    var walker = walk.walk(articleDir);
 
     walker.on('file', function (root, stat, next) {
-        onFile(root, stat);
+        var match = /html/.test(stat.name)
+        if (match) {
+            file = path.basename(root);
+            discovered.push(file);
+        }
         next();
     });
 
-    walker.on('end', onEnd);
-}
+    walker.on('end', function () {
 
-var html = '<tr><td><a class="name"></a></td></tr>';
+        router.addRoute(mount + '/:article', function(req, res, params) {
 
-function asTable() {
-    return hyperspace(html, function(doc) {
-        return {
-            'a.name' : {
-                name : doc.name,
-                href : doc.url,
-                _text : doc.name
-            }
-        }
+            layout(res, params, mount, articleDir, function(pipe) {
+                var urls = discovered.map(function(article) {
+                    return mount + '/' + article;
+                })
+
+                linkstand(pipe, discovered, urls);
+
+            });
+
+        });
+
+        cb();
+
     });
+
 }
 
-function toHTML(pipe) {
-    var linkStand = asTable();
-    linkStand.pipe(pipe);
 
-    for (var i = 0 ; i < discovered.length ; i++) {
-         linkStand.write({name:discovered[i], url: '/articles/' + discovered[i]})
-    }
-
-    linkStand.end();
-}
-
-articles(function(file, stat) {
-    var match = /html/.test(stat.name)
-    if (match) {
-        file = path.basename(file);
-        discovered.push(file);
-    }
-}, function() {
-    //pipe.end();
-});
-
-module.exports.articles = articles;
-module.exports.toHTML   = toHTML;
-module.exports.asTable  = asTable;
-module.exports.layout   = layout;
+module.exports = attach;
