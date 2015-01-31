@@ -15,7 +15,7 @@ var linkstand      = require('./linkstand');
 function read (file, cb, error) {
     fs.stat(file, function(err, stat) {
         if (err == null) {
-            cb(fs.createReadStream(path.join(__dirname, file)));
+            cb(fs.createReadStream(file));
         } else if (err.code == 'ENOENT') {
             console.log(file + ' article does not exist');
             error(err);
