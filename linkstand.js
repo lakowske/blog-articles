@@ -18,15 +18,17 @@ function asTable() {
     });
 }
 
-function toHTML(pipe, names, urls) {
+function toHTML(names, urls) {
     var linkStand = asTable();
-    linkStand.pipe(pipe);
 
     for (var i = 0 ; i < names.length ; i++) {
          linkStand.write({name:names[i], url: urls[i]})
     }
 
     linkStand.end();
+
+    return linkStand;
 }
 
-module.exports = toHTML;
+module.exports.toHTML = toHTML;
+module.exports.asTable = asTable;
