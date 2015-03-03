@@ -10,12 +10,26 @@ var path      = require('path');
 var through   = require('through');
 var trumpet   = require('trumpet');
 
+/*
+ * Captures streams
+ */
+function streamCapture() {
+    this.value  = '';
+    this.stream = through(function(data) {
+        this.value += data;
+    });
+}
+
+streamCapture.prototype.get = function() {
+    this.value;
+}
+
 test('can compose an article page', function(t) {
 
     var mount      = '/articles';
     var articleDir = '../test/articles';
 
-    articles('../test/articles', function(discovered) {
+    articles(articleDir, function(discovered) {
 
         t.deepEqual(discovered, ['sabado'], 'found an article');
 
@@ -26,20 +40,17 @@ test('can compose an article page', function(t) {
 
             var articleStream = fs.createReadStream(path.join(articleDir, article, 'index.html'));
 
-            var tr = trumpet();
-            var ws = tr.createWriteStream('#related');
+            var links = [{name:'hi', url:'articles/hi'},
+                         {name:'seth', url:'articles/seth'}]
 
-            var names = ['hi', 'seth']
-            var urls  = ['articles/hi', 'articles/seth']
-
-            var stand = linkstand.toHTML(names, urls);
-            stand.pipe(ws);
+            var related = linkstand.streamLinks(links, '#related');
 
             var output = '';
             var recorder = through(function(data) {
                 output += data;
             })
-            articleStream.pipe(tr).pipe(recorder);
+
+            articleStream.pipe(related).pipe(recorder);
 
             articleStream.on('end', function() {
                 t.same(output,
@@ -59,4 +70,33 @@ test('can compose an article page', function(t) {
 
     })
 
+})
+
+test('can compose from multiple streams', function(t) {
+    var articleDir = '../test/articles';
+
+    var articleStream  = fs.createReadStream(path.join(articleDir, 'sabado', 'index.html'));
+    var related = require('../linkstand').streamLinks([{name:'seth', url:'sethlakowske.com'}], '#related');
+
+    var output = '';
+    var recorder = through(function(data) {
+        output += data;
+    })
+
+    articleStream.pipe(related).pipe(recorder);
+
+    articleStream.on('end', function() {
+
+        t.same(output,
+               ''
+               + '<html>\n'
+               + '<body>\n'
+               + '<table id="related">'
+               + '<tr><td><a class="name" name="seth" href="sethlakowske.com">seth</a></td></tr>'
+               + '</table>\n'
+               + '</body>\n'
+               + '</html>\n\n','an expanded web page');
+        t.end();
+
+    })
 })

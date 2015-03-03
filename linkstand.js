@@ -3,6 +3,7 @@
  */
 
 var hyperspace = require('hyperspace');
+var trumpet    = require('trumpet');
 
 var html = '<tr><td><a class="name"></a></td></tr>';
 
@@ -18,11 +19,11 @@ function asTable() {
     });
 }
 
-function toHTML(names, urls) {
+function toHTML(links) {
     var linkStand = asTable();
 
-    for (var i = 0 ; i < names.length ; i++) {
-         linkStand.write({name:names[i], url: urls[i]})
+    for (var i = 0 ; i < links.length ; i++) {
+         linkStand.write({name:links[i].name, url: links[i].url})
     }
 
     linkStand.end();
@@ -30,5 +31,13 @@ function toHTML(names, urls) {
     return linkStand;
 }
 
-module.exports.toHTML = toHTML;
-module.exports.asTable = asTable;
+function streamLinks(links, selector) {
+    var related = trumpet();
+    var ws = related.createWriteStream('#related');
+    toHTML(links).pipe(ws);
+    return related;
+}
+
+module.exports.toHTML      = toHTML;
+module.exports.asTable     = asTable;
+module.exports.streamLinks = streamLinks;
