@@ -37,4 +37,5 @@ function articles(articleDir, cb) {
 
 }
 
-module.exports.articles = articles;
+module.exports.articles  = articles;
+module.exports.linkstand = linkstand;
