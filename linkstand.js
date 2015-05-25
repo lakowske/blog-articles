@@ -23,7 +23,8 @@ function toHTML(links) {
     var linkStand = asTable();
 
     for (var i = 0 ; i < links.length ; i++) {
-         linkStand.write({name:links[i].name, url: links[i].url})
+
+        linkStand.write({name:links[i].name, url: links[i].url})
     }
 
     linkStand.end();
