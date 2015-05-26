@@ -39,5 +39,13 @@ function articles(articleDir, cb) {
 
 }
 
+function related(discovered) {
+    var related = trumpet();
+    var ws      = related.createWriteStream('#related');
+    var stand   = linkstand.toHTML(discovered);
+    stand.pipe(ws);
+}
+
 module.exports.articles  = articles;
 module.exports.linkstand = linkstand;
+modele.exports.related   = related;
