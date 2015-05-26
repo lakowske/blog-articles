@@ -44,8 +44,9 @@ function related(discovered) {
     var ws      = related.createWriteStream('#related');
     var stand   = linkstand.toHTML(discovered);
     stand.pipe(ws);
+    return related;
 }
 
 module.exports.articles  = articles;
 module.exports.linkstand = linkstand;
-modele.exports.related   = related;
+module.exports.related   = related;
