@@ -10,6 +10,48 @@ var through        = require('through');
 var fs             = require('fs');
 var trumpet        = require('trumpet');
 
+function slurp(stream, cb) {
+    var content = '';
+    stream.on('data', function(data) {
+        content += data;
+    })
+    stream.on('end', function() {
+        cb(content);
+    })
+}
+
+function pre(msg) {
+    var first = true;
+    return through(function(data) {
+        if (first) {
+            this.push(msg);
+            first = false;
+        }
+        this.push(data);
+    })
+}
+
+function suffix(stream, msg) {
+
+    var tr = through();
+    
+    stream.on('data', function(data) {
+
+        tr.write(data);
+
+    });
+
+    stream.on('end', function() {
+        tr.write(msg);
+        tr.end();
+    });
+
+    stream.pipe(tr);
+    
+    return tr;
+
+}
+
 test('404s non-existent article', function(t) {
 
     var router = routes();
@@ -29,10 +71,37 @@ test('serves articles', function(t) {
         found.map(function(article) {
             var index = article.path
             var stream = fs.createReadStream(index);
-            stream.pipe(process.stdout);
-            t.end();
+            slurp(stream, function(result) {
+                //console.log('result: ' + result);
+                t.end();
+            });
         })
     })
+})
+
+test('trumpet read tags', function(t) {
+    
+    var stream = fs.createReadStream('./test/articles/sabado/index.html');
+
+    var related = trumpet();
+    var body = related.createStream('body');
+
+    stream.pipe(related);
+
+    slurp(body, function(content) {
+        body.write(content);
+        body.write('woohoo');
+        body.end();
+    })
+
+    //suffix(body, 'hi wisconsin\n').pipe(body);
+    //body.pipe(pre('hi wisconsin, ')).pipe(body);
+    slurp(related, function(result) {
+        console.log('result: ' + result);
+        t.end();
+    });
+
+
 })
 
 test('trumpets articles', function(t) {
@@ -51,7 +120,11 @@ test('trumpets articles', function(t) {
             var ws      = related.createWriteStream('#related');
             var stand   = articles.linkstand.toHTML(found);
             stand.pipe(ws);
-            stream.pipe(related).pipe(process.stdout);
+            slurp(related, function(result) {
+                console.log('result: ' + result);
+                t.end();
+            })
+            //stream.pipe(related).pipe(process.stdout);
 
         })
 
