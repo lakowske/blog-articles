@@ -26,7 +26,7 @@ function articles(articleDir, cb) {
         root = path.normalize(root);
         url = path.join(root, stat.name);
         if (match) {
-            discovered.push({name:file, root:root, path:url, url:'/' + root});
+            discovered.push({name:file, root:root, path:url, url:'/' + root + '/'});
         }
         next();
     });
