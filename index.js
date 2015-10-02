@@ -25,7 +25,8 @@ function articles(articleDir, cb) {
         file = path.basename(root);
         root = path.normalize(root);
         url = path.join(root, stat.name);
-        if (match) {
+        var depth = root.split('/').length;
+        if (match && depth <= 2) {
             discovered.push({name:file, root:root, path:url, url:'/' + root + '/'});
         }
         next();
