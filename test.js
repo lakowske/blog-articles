@@ -120,6 +120,7 @@ test('trumpets articles', function(t) {
             var related = trumpet();
             var ws      = related.createWriteStream('#related');
             var stand   = articles.linkstand.toHTML(found);
+            stand.pipe(process.stdout);
             stand.pipe(ws);
             slurp(related, function(result) {
                 console.log('result: ' + result);
