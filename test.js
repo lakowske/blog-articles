@@ -116,7 +116,7 @@ test('trumpets articles', function(t) {
         found.map(function(article) {
             var index = article.path
             var stream = fs.createReadStream(index);
-            console.log(index);
+            console.log(index, stream);
             
             var related = trumpet();
             var ws      = related.createWriteStream('#related');
