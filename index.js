@@ -29,14 +29,16 @@ function articles(articleDir, cb) {
         console.log(root, match, depth);
         if (match && depth <= 2) {
             var typePath = path.join(root, 'type.json');
-            console.log(typePath, stats);            
-            var stats = fs.statSync(typePath);
-
+            console.log(typePath, stats);
             var article = {name:file, root:root, path:url, type: {}, url:'/' + root + '/'};
-            if (stats) {
+            try {
+                var stats = fs.statSync(typePath);
                 var type = JSON.parse(fs.readFileSync(typePath, 'utf-8'));
                 article.type = type;
+            } catch (err) {
+                //nothing
             }
+
             discovered.push(article);
         }
         next();
