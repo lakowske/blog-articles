@@ -30,11 +30,11 @@ function articles(articleDir, cb) {
         if (match && depth <= 2) {
             var typePath = path.join(root, 'type.json');
             console.log(typePath, stats);
-            var article = {name:file, root:root, path:url, type: {}, url:'/' + root + '/'};
+            var article = {name:file, root:root, path:url, typeInfo: {}, url:'/' + root + '/'};
             try {
                 var stats = fs.statSync(typePath);
                 var type = JSON.parse(fs.readFileSync(typePath, 'utf-8'));
-                article.type = type;
+                article.typeInfo = type;
             } catch (err) {
                 //nothing
             }
