@@ -28,15 +28,13 @@ function articles(articleDir, cb) {
         var depth = root.split('/').length;
         if (match && depth <= 2) {
             var typePath = path.join(root, 'type.json');
-            var props = fs.stat(typePath, (err, stats) => {
-                var article = {name:file, root:root, path:url, type: {}, url:'/' + root + '/'};
-                if (err) {
-                    discovered.push(article);
-                } else {
-                    var type = JSON.parse(fs.readFileSync(typePath, 'utf-8'));
-                    article.type = type;
-                }
-            })
+            var stats = fs.statSync(typePath);
+            var article = {name:file, root:root, path:url, type: {}, url:'/' + root + '/'};
+            if (stats) {
+                var type = JSON.parse(fs.readFileSync(typePath, 'utf-8'));
+                article.type = type;
+            }
+            discovered.push(article);
         }
         next();
     });
