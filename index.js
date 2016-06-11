@@ -26,7 +26,7 @@ function articles(articleDir, cb) {
         root = path.normalize(root);
         url = path.join(root, stat.name);
         var depth = root.split('/').length;
-        console.log(match, depth);
+        console.log(root, match, depth);
         if (match && depth <= 3) {
             var typePath = path.join(root, 'type.json');
             console.log(typePath, stats);            
