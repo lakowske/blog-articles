@@ -34,7 +34,7 @@ function articles(articleDir, cb) {
                     discovered.push(article);
                 } else {
                     var type = JSON.parse(fs.readFileSync(typePath, 'utf-8'));
-                    article['type'] = type;
+                    article.type = type;
                 }
             })
         }
