@@ -68,6 +68,7 @@ test('serves articles', function(t) {
     var router = routes();
     var articleDir = './test/articles/';
     var article = articles.articles(articleDir, function(found) {
+        console.log(found);
         found.map(function(article) {
             var index = article.path
             var stream = fs.createReadStream(index);
