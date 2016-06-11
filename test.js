@@ -66,7 +66,7 @@ test('404s non-existent article', function(t) {
 test('serves articles', function(t) {
 
     var router = routes();
-    var articleDir = './test/articles/';
+    var articleDir = './articles/';
     var article = articles.articles(articleDir, function(found) {
         console.log(found);
         found.map(function(article) {
@@ -82,7 +82,7 @@ test('serves articles', function(t) {
 
 test('trumpet read tags', function(t) {
     
-    var stream = fs.createReadStream('./test/articles/sabado/index.html');
+    var stream = fs.createReadStream('./articles/sabado/index.html');
 
     var related = trumpet();
     var body = related.createStream('body');
@@ -108,7 +108,7 @@ test('trumpet read tags', function(t) {
 test('trumpets articles', function(t) {
 
     var router = routes();
-    var articleDir = './test/articles/';
+    var articleDir = './articles/';
 
     var article = articles.articles(articleDir, function(found) {
         console.log(found);
