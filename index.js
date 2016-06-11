@@ -27,7 +27,16 @@ function articles(articleDir, cb) {
         url = path.join(root, stat.name);
         var depth = root.split('/').length;
         if (match && depth <= 2) {
-            discovered.push({name:file, root:root, path:url, url:'/' + root + '/'});
+            var typePath = path.join(root, 'type.json');
+            var props = fs.stat(typePath, (err, stats) => {
+                var article = {name:file, root:root, path:url, url:'/' + root + '/'};
+                if (err) {
+                    discovered.push(article);
+                } else {
+                    var type = JSON.parse(fs.readFileSync(typePath, 'utf-8'));
+                    article['type'] = type;
+                }
+            })
         }
         next();
     });
