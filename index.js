@@ -29,6 +29,7 @@ function articles(articleDir, cb) {
         if (match && depth <= 2) {
             var typePath = path.join(root, 'type.json');
             var stats = fs.statSync(typePath);
+            console.log(typePath, stats);
             var article = {name:file, root:root, path:url, type: {}, url:'/' + root + '/'};
             if (stats) {
                 var type = JSON.parse(fs.readFileSync(typePath, 'utf-8'));
