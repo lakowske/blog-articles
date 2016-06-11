@@ -29,7 +29,7 @@ function articles(articleDir, cb) {
         if (match && depth <= 2) {
             var typePath = path.join(root, 'type.json');
             var props = fs.stat(typePath, (err, stats) => {
-                var article = {name:file, root:root, path:url, url:'/' + root + '/'};
+                var article = {name:file, root:root, path:url, type: {}, url:'/' + root + '/'};
                 if (err) {
                     discovered.push(article);
                 } else {
