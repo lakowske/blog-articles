@@ -117,16 +117,18 @@ test('trumpets articles', function(t) {
             var index = article.path
             var stream = fs.createReadStream(index);
             console.log(index);
+
+            slurp(stream, function(result) {
+                
+                console.log('result: ' + result);
+                t.end();
+            })
             
             var related = trumpet();
             var ws      = related.createWriteStream('#related');
             var stand   = articles.linkstand.toHTML(found);
             stand.pipe(process.stdout);
             stand.pipe(ws);
-            slurp(related, function(result) {
-                console.log('result: ' + result);
-                t.end();
-            })
             //stream.pipe(related).pipe(process.stdout);
 
         })
