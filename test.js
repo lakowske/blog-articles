@@ -122,6 +122,7 @@ test('trumpets articles', function(t) {
             var stand   = articles.linkstand.toHTML(found);
             stand.pipe(ws);
             var output = stream.pipe(related);
+            t.ok(article.type.prism, "a prism syntax highlighted article");
 
 
             slurp(output, function(result) {
