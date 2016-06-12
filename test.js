@@ -121,15 +121,16 @@ test('trumpets articles', function(t) {
             var ws      = related.createWriteStream('#related');
             var stand   = articles.linkstand.toHTML(found);
             stand.pipe(ws);
-            stream.pipe(related).pipe(process.stdout);
-            t.end();
-            /*
-            slurp(stream, function(result) {
+            var output = stream.pipe(related);
+
+
+            slurp(output, function(result) {
                 
                 console.log('result: ' + result);
+
                 t.end();
             })
-             */
+
             
         })
 
