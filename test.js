@@ -111,7 +111,6 @@ test('trumpets articles', function(t) {
     var articleDir = './articles/';
 
     var article = articles.articles(articleDir, function(found) {
-        console.log(found);
 
         found.map(function(article) {
             var index = article.path
