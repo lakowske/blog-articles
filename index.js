@@ -9,12 +9,26 @@ var trumpet        = require('trumpet');
 var linkstand      = require('./linkstand');
 
 /*
+ * Remove the front of a path.
+ */
+function trimPathPrefix(prefix, path) {
+    var pathParts = path.split('/')
+    var prefixParts = prefix.split('/')
+    while (prefixParts.length > 0 && pathParts.length > 0 && prefixParts[0] === pathParts[0]) {
+        prefixParts.shift()
+        pathParts.shift()
+    }
+
+    return pathParts.join('/');
+}
+
+/*
  * Find html based articles under the given articleDir and passes found articles to callback
  *
  * @param {String} articleDir relative path to search under.
  * @param {Function} cb function takes one argument, the found articles under articleDir.
  */
-function articles(articleDir, cb) {
+function articles(articleDir, basePath, cb) {
     
     var discovered = []
 
@@ -25,10 +39,12 @@ function articles(articleDir, cb) {
         file = path.basename(root);
         root = path.normalize(root);
         url = path.join(root, stat.name);
+        
         var depth = root.split('/').length;
-        if (match && depth <= 2) {
+        if (match && depth <= 5) {
             var typePath = path.join(root, 'type.json');
-            var article = {name:file, root:root, path:url, type: {}, url:'/' + root + '/'};
+            var articleUrl = trimPathPrefix(basePath, root);
+            var article = {name:file, root:root, path:url, type: {}, url:'/' + articleUrl + '/'};
             try {
                 var stats = fs.statSync(typePath);
                 var type = JSON.parse(fs.readFileSync(typePath, 'utf-8'));
