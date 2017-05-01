@@ -1,6 +1,6 @@
 {
   "name": "blog-articles",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Serves articles from a nodejs http server",
   "main": "index.js",
   "scripts": {
