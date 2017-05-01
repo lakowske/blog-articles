@@ -87,7 +87,7 @@ function articlesObservable(articleDir, basePath) {
                     var type = JSON.parse(fs.readFileSync(typePath, 'utf-8'));
                     article.type = type;
                 } catch (err) {
-                    observer.error(err);
+                    //Do nothing if we couldn't stat optional file type file.
                 }
 
                 observer.next(article);
