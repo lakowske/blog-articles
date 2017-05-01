@@ -7,6 +7,7 @@ var path           = require('path');
 var walk           = require('walk')
 var trumpet        = require('trumpet');
 var linkstand      = require('./linkstand');
+var Rx             = require('rxjs/Rx');
 
 /*
  * Remove the front of a path.
@@ -66,6 +67,41 @@ function articles(articleDir, basePath, cb) {
 
 }
 
+function articlesObservable(articleDir, basePath) {
+    return Rx.Observable.create(function(observer) {
+        var walker = walk.walk(articleDir);
+
+        walker.on('file', function (root, stat, next) {
+            var match = /html/.test(stat.name)
+            file = path.basename(root);
+            root = path.normalize(root);
+            url = path.join(root, stat.name);
+            
+            var depth = root.split('/').length;
+            if (match && depth <= 5) {
+                var typePath = path.join(root, 'type.json');
+                var articleUrl = trimPathPrefix(basePath, root);
+                var article = {name:file, root:root, path:url, type: {}, url:'/' + articleUrl + '/'};
+                try {
+                    var stats = fs.statSync(typePath);
+                    var type = JSON.parse(fs.readFileSync(typePath, 'utf-8'));
+                    article.type = type;
+                } catch (err) {
+                    observer.error(err);
+                }
+
+                observer.next(article);
+            }
+            next();
+        });
+
+        walker.on('end', function () {
+            observer.complete();
+        });
+        
+    });
+}
+
 function related(discovered) {
     var related = trumpet();
     var ws      = related.createWriteStream('#related');
@@ -77,3 +113,4 @@ function related(discovered) {
 module.exports.articles  = articles;
 module.exports.linkstand = linkstand;
 module.exports.related   = related;
+module.exports.articlesObservable = articlesObservable;
