@@ -5,8 +5,13 @@
 var hyperspace = require('hyperspace');
 var trumpet    = require('trumpet');
 
+// A table row html snippet
 var html = '<tr><td><a class="name"></a></td></tr>';
 
+/*
+    Return a stream that takes lines of json as input
+    and returns table rows as output
+*/
 function asTable() {
     return hyperspace(html, function(doc) {
         return {
@@ -19,6 +24,9 @@ function asTable() {
     });
 }
 
+/*
+    Write a set of links to an asTable hyperspace stream.
+*/
 function toHTML(links) {
     var linkStand = asTable();
 
